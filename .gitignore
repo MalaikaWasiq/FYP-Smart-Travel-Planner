@@ -1,0 +1,24 @@
+# Dependencies
+**/node_modules/
+.venv/
+__pycache__/
+**/*.pyc
+**/.pytest_cache/
+
+# Expo / Build
+**/.expo/
+**/.expo-shared/
+**/dist/
+**/build/
+
+# Environment and Secrets (CRITICAL: Do not commit API keys or JWT secrets)
+.env
+*.env
+backend/.env
+frontend/.env
+ml/.env
+
+# Logs and system files
+**/*.log
+**/.DS_Store
+Thumbs.db
