@@ -11,7 +11,11 @@ function errorHandler(error, req, res, next) {
   if (error.code === 11000) { statusCode = 409; message = 'A record with these details already exists'; }
   if (statusCode >= 500) {
     console.error(`[api] ${req.method} ${req.originalUrl} failed: ${error.message}`);
-    message = 'The server could not complete this request';
+    if (statusCode === 503 && error.message) {
+      message = error.message;
+    } else {
+      message = 'The server could not complete this request';
+    }
   }
 
   res.status(statusCode).json({

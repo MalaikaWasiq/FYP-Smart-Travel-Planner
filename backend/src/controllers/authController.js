@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+const { connectDb } = require('../config/db');
 
 const User = require('../models/User');
 const Trip = require('../models/Trip');
@@ -28,8 +30,12 @@ function signToken(user) {
 
 async function signup(req, res, next) {
   try {
-    if (!req.app.locals.dbReady) {
-      throw httpError(503, 'Database is not configured. Set LOCAL_MONGODB_URI and restart the backend.');
+    const isDbConnected = mongoose.connection.readyState === 1 || Boolean(req.app.locals.dbReady);
+    if (!isDbConnected) {
+      const ok = await connectDb(req.app);
+      if (!ok && mongoose.connection.readyState !== 1) {
+        throw httpError(503, 'Database is currently offline. Please ensure MongoDB is running.');
+      }
     }
 
     const { fullName, email, password } = req.body;
@@ -67,8 +73,12 @@ async function signup(req, res, next) {
 
 async function login(req, res, next) {
   try {
-    if (!req.app.locals.dbReady) {
-      throw httpError(503, 'Database is not configured. Set LOCAL_MONGODB_URI and restart the backend.');
+    const isDbConnected = mongoose.connection.readyState === 1 || Boolean(req.app.locals.dbReady);
+    if (!isDbConnected) {
+      const ok = await connectDb(req.app);
+      if (!ok && mongoose.connection.readyState !== 1) {
+        throw httpError(503, 'Database is currently offline. Please ensure MongoDB is running.');
+      }
     }
 
     const { email, password } = req.body;

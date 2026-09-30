@@ -1,12 +1,13 @@
 require('dotenv').config();
 
 const app = require('./app');
-const connectDb = require('./config/db');
+const { connectDb, initDbAutoReconnect } = require('./config/db');
 
 const PORT = process.env.PORT || 5000;
 
 async function start() {
-  const dbReady = await connectDb();
+  initDbAutoReconnect(app);
+  const dbReady = await connectDb(app);
   app.locals.dbReady = dbReady;
 
   app.listen(PORT, () => {
